@@ -1,0 +1,13 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {"hooks": [{"type": "command", "command": "python /path/to/qa-loop/qa_loop/hook.py"}]}
+    ],
+    "Stop": [
+      {"hooks": [
+        {"type": "command", "command": "python /path/to/qa-loop/qa_loop/hook.py"},
+        {"type": "command", "command": "python /path/to/qa-loop/qa_loop/gate.py --mode enforce"}
+      ]}
+    ]
+  }
+}

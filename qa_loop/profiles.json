@@ -1,0 +1,101 @@
+{
+  "ui": {
+    "adversary": {"agent": "picky-user", "role": "uses the page like a demanding customer: desktop and phone viewport, odd inputs, slow clicks"},
+    "complaint_evidence": "screenshot of the same screen the complaint describes",
+    "params": {"viewports": "1280x800, 390x844"},
+    "gates": [
+      {"text": "The requested change is visible on the real page", "evidence": "screenshot per viewport", "hard": true},
+      {"text": "Nothing overflows, overlaps or is cut off", "evidence": "screenshot per viewport"},
+      {"text": "Every interactive element responds", "evidence": "recorded click-through or test log"},
+      {"text": "No console errors on load", "evidence": "console output"}
+    ],
+    "tests": ["Screenshot each viewport", "Click every control once", "Read the browser console"]
+  },
+  "render": {
+    "adversary": {"agent": "frame-reviewer", "role": "steps through the output frame by frame or page by page and lists every artifact, glitch and mismatch with the brief"},
+    "complaint_evidence": "the frame or crop where the complaint was seen",
+    "params": {},
+    "gates": [
+      {"text": "The output matches the brief in the frames that matter", "evidence": "frame crops", "hard": true},
+      {"text": "No visible glitches: warped shapes, flicker, text errors, cut-off edges", "evidence": "frame crops at the start, middle and end"},
+      {"text": "Length, size and format are what was asked", "evidence": "file properties"}
+    ],
+    "tests": ["Export the final file", "Extract frames at the start, middle and end"]
+  },
+  "doc": {
+    "adversary": {"agent": "named-reader", "role": "reads as the intended reader and marks every sentence they would not understand or trust"},
+    "complaint_evidence": "the rendered page or text where the complaint was seen",
+    "params": {},
+    "gates": [
+      {"text": "Every claim in the document is backed by a source or a number you can find", "evidence": "claim list with sources", "hard": true},
+      {"text": "The rendered output has no broken layout, empty pages or cut tables", "evidence": "page images"},
+      {"text": "Answers the question the reader came with in the first paragraph", "evidence": "first paragraph quoted"}
+    ],
+    "tests": ["Render to the final format", "Look at every page image"]
+  },
+  "message": {
+    "adversary": {"agent": "recipient", "role": "plays the person who will receive it and says what they would do after reading"},
+    "complaint_evidence": "the exact sentence that caused the complaint, before and after",
+    "params": {},
+    "gates": [
+      {"text": "The recipient can act on it without asking a question back", "evidence": "recipient reading, quoted", "hard": true},
+      {"text": "Facts in the text match the source they came from", "evidence": "fact to source list"},
+      {"text": "Tone fits the relationship", "evidence": "two quoted sentences"}
+    ],
+    "tests": ["Read it aloud once", "Check each fact against its source"]
+  },
+  "code": {
+    "adversary": {"agent": "hostile-reviewer", "role": "reads the diff, runs it on edge inputs, looks for the case that breaks"},
+    "complaint_evidence": "the failing command or input re-run, output captured",
+    "params": {"runtime": "the real entry point (CLI, hook stdin, server)"},
+    "gates": [
+      {"text": "Does what was asked end to end on the real entry point", "evidence": "command + output", "hard": true},
+      {"text": "Tests exist for the new behaviour and pass", "evidence": "test run output"},
+      {"text": "Edge cases: empty input, missing file, bad JSON, non-ASCII text, Windows paths", "evidence": "command + output per case"},
+      {"text": "Fails safe: an error never loses data or blocks the user", "evidence": "error-path run output"}
+    ],
+    "tests": ["Run the test suite", "Pipe sample input into the entry point", "Run each edge case"]
+  },
+  "data": {
+    "adversary": {"agent": "auditor", "role": "recounts rows, samples records and looks for duplicates, gaps and silent truncation"},
+    "complaint_evidence": "query or count that shows the problem before and after",
+    "params": {},
+    "gates": [
+      {"text": "Row counts match between source and destination", "evidence": "two counts", "hard": true},
+      {"text": "A random sample of records matches field by field", "evidence": "sample diff"},
+      {"text": "Rerunning the load changes nothing", "evidence": "counts after second run"}
+    ],
+    "tests": ["Count both sides", "Diff 20 random records", "Run twice"]
+  },
+  "deploy": {
+    "adversary": {"agent": "release-reviewer", "role": "assumes the deploy changed something it should not have and reads the environment back"},
+    "complaint_evidence": "read-back from the target environment, not from the deploy tool",
+    "params": {"environment": "staging"},
+    "gates": [
+      {"text": "The change is live in the target environment", "evidence": "read-back query or request", "hard": true},
+      {"text": "The previous behaviour that must not change still works", "evidence": "regression request"},
+      {"text": "Rollback path is stated and was checked to exist", "evidence": "command or link"}
+    ],
+    "tests": ["Read back from the target", "Run the regression request"]
+  },
+  "diagnosis": {
+    "adversary": {"agent": "devils-advocate", "role": "proposes two other causes and asks what observation separates them from yours"},
+    "complaint_evidence": "the observation that the proposed cause explains",
+    "params": {},
+    "gates": [
+      {"text": "The cause was reproduced or its absence made the symptom vanish", "evidence": "before and after observation", "hard": true},
+      {"text": "At least two alternative causes were ruled out with an observation each", "evidence": "alternatives list"}
+    ],
+    "tests": ["Reproduce", "Remove the suspected cause and observe"]
+  },
+  "other": {
+    "adversary": {"agent": "skeptic", "role": "the most demanding person who will use the result, assuming it is broken"},
+    "complaint_evidence": "whatever the person looked at when they said it was wrong",
+    "params": {},
+    "gates": [
+      {"text": "Does what was asked, as the person would check it", "evidence": "output of the real thing", "hard": true},
+      {"text": "Nothing else that worked before is now broken", "evidence": "before and after"}
+    ],
+    "tests": ["Run the real thing once"]
+  }
+}

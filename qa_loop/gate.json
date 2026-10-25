@@ -1,0 +1,31 @@
+{
+  "write_commands": [
+    "\\bgit\\s+push\\b",
+    "\\bnpm\\s+publish\\b",
+    "\\bdocker\\s+push\\b",
+    "\\bkubectl\\s+(apply|delete|rollout\\s+restart|patch|scale)\\b",
+    "\\bterraform\\s+(apply|destroy)\\b",
+    "\\b(psql|mysql|sqlite3)\\b.*\\b(insert|update|delete|alter|drop)\\b",
+    "\\bcurl\\b.*(-X|--request)\\s*(POST|PUT|PATCH|DELETE)",
+    "\\baws\\s+\\S+\\s+(put|update|create|delete|sync|cp|deploy)\\b",
+    "\\bgcloud\\b.*\\b(deploy|create|delete|update)\\b",
+    "\\b(rsync|scp)\\b.*:"
+  ],
+  "check_only": "--dry-run|--check\\b|\\bplan\\b|\\bvalidate\\b|--noop",
+  "production": "\\bprod(uction)?\\b",
+  "evidence_commands": [
+    "\\b(pytest|unittest|jest|vitest|go\\s+test|cargo\\s+test|npm\\s+(run\\s+)?test|mocha)\\b",
+    "\\bkubectl\\s+(get|describe|rollout\\s+status|logs)\\b",
+    "\\bterraform\\s+(plan|show|output)\\b",
+    "\\bgit\\s+(ls-remote|log\\s+origin|diff\\s+origin)\\b",
+    "\\bcurl\\b(?!.*(-X|--request)\\s*(POST|PUT|PATCH|DELETE))",
+    "\\b(psql|mysql|sqlite3)\\b.*\\bselect\\b",
+    "\\baws\\s+\\S+\\s+(get|describe|list|head)\\b",
+    "\\b(verify|smoke|e2e|screenshot)[\\w.-]*\\.(py|js|mjs|sh)\\b"
+  ],
+  "evidence_tools": "take_screenshot|screenshot|get_page_text|snapshot",
+  "reviewer_agents": "review|adversary|qa|verif",
+  "done_claim": "\\b(done|fixed|deployed|live|shipped|released|published|pushed|works|working now|all set|completed?|finished)\\b",
+  "not_done": "\\b(not|isn'?t|aren'?t|n'?t|never|still|pending|unverified|not verified|can'?t|couldn'?t)\\b[^.\\n]{0,30}\\b(done|fixed|deployed|live|shipped|released|working|complete|finished|verified)\\b|\\bunverified\\b|\\bnot verified\\b",
+  "max_blocks": 2
+}
